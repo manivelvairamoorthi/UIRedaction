@@ -1,0 +1,36 @@
+<section class="login-block">
+    <div class="container">
+        <div class="form-group">
+            <div class="text-left">
+                <img class="mr-3  mt-2" src="../../assets/Ntt_Icon.png" width="30%">
+            </div>
+        </div>
+        <div class="row text-left pl-4 pr-4">
+            <div style="padding: 0px 30px;">
+                <small *ngIf="validcredential" style="color: red">
+                    Please enter valid credentials
+                </small>
+                <h1 class="text">Login Now</h1>
+                <form class="login-form" #loginform="ngForm">
+                    <mat-form-field class="col-lg-12 p-0" appearance="outline" style="padding-bottom:10px !important;">
+                        <mat-label>E-Mail</mat-label>
+                        <input matInput type="text" placeholder="Username" [(ngModel)]="loginData.email"
+                            [formControl]="username" name="email" required>
+                        <mat-icon matSuffix>person</mat-icon>
+                        <mat-error *ngIf="username.invalid">{{getErrorMessage()}}</mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="col-lg-12 p-0" appearance="outline">
+                        <mat-label>Password</mat-label>
+                        <input matInput type="password" placeholder="Password" [(ngModel)]="loginData.password"
+                            name="password" required>
+                        <mat-icon matSuffix>key</mat-icon>
+                    </mat-form-field>
+
+                    <div class="mt-3 mb-5 text-center">
+                        <button type="submit" class="btn" (click)="login()">LOGIN</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

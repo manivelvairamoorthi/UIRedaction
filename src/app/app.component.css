@@ -1,0 +1,19 @@
+::ng-deep .mat-tooltip {
+    font-size: 14px;
+    white-space: pre-wrap;
+    color: #6284c0 !important;
+    background-color: #fff;
+    border:1px solid #6284c0;
+    max-width: unset !important;
+}
+::ng-deep .mat-tooltip::before {
+    content: '';
+    position: absolute;
+    top:48%;
+    left: -8px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    transform: rotate(45deg) translate(-50);
+    border-radius: 2px;
+}

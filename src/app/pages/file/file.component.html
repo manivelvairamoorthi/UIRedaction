@@ -1,0 +1,255 @@
+<div class="container" *ngIf="!showExcel">
+  <div class="row mt-3">
+    <div class="col-lg-7">
+      <mat-form-field appearance="outline" *ngFor="let filter of filterSelectObj" class=" col-lg-8" style="width:30%">
+        <mat-label>Filter by {{filter.name}}</mat-label>
+        <mat-select multiple name="{{filter.columnProp}}" [(value)]="selection"
+          (selectionChange)="fileFilter($event.value)">
+          <mat-option value="{{item.id}}" *ngFor="let item of filter.options">{{item.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>&nbsp;&nbsp;
+      <mat-form-field appearance="outline" class=" col-lg-4" style="width:30%">
+        <mat-label>Filter by status</mat-label>
+        <mat-select multiple [(value)]="selection" [(ngModel)]="status" (selectionChange)="applyFilter($event.value)">
+          <mat-option value="{{status}}" *ngFor="let status of statusArray">{{status}}</mat-option>
+        </mat-select>
+      </mat-form-field>&nbsp;&nbsp;
+      <mat-form-field appearance="outline" class=" col-lg-4 ml-4 " style="width: 30%;">
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate placeholder="Start date" [(ngModel)]="startDate">
+          <input matEndDate placeholder="End date" [(ngModel)]="endDate" (dateInput)="filterChange($event.value)">  
+        </mat-date-range-input>
+        
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        
+        <mat-date-range-picker #picker></mat-date-range-picker>
+        
+      </mat-form-field>
+    </div>
+    <div class="col-lg-5 " style="text-align: right">
+      <mat-form-field class="p-0" appearance="outline" >
+        <mat-label>Search</mat-label>
+        <input matInput type="text" placeholder="Search here" name="search" (keyup)="applySearchFilters($event.target)">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+
+  </div>
+
+  <div class="mat-elevation-z8 mt-1">
+    <span class="btt">
+      <!-- <button mat-fab color="primary" *ngIf="redactbtn" matTooltip="Auto Redact" matTooltipPosition=below>
+        <mat-icon>aspect_ratio</mat-icon>
+      </button>&nbsp;&nbsp; -->
+      <button mat-fab color="primary" (click)="openFileModal()" matTooltip="Upload new file" matTooltipPosition=below>
+        <mat-icon>cloud_upload</mat-icon>
+      </button>
+    </span>
+    <table mat-table [dataSource]="dataSource" id="customers" matSort class="col-lg-12">
+      <!-- <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+
+          <mat-checkbox [checked]="checkAll" (change)="$event?toggleAll($event) : null" color="primary"
+            *ngIf="showAllCheck"></mat-checkbox>
+
+        </th>
+        <td mat-cell *matCellDef="let element;let i=index">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggle(element, $event) : null"
+            [checked]="exists(element)" color="primary" *ngIf="element['file_status']==1"></mat-checkbox>
+        </td>
+      </ng-container> -->
+      <!-- Position Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> No. </th>
+        <td mat-cell *matCellDef="let element;let i=index;"> {{i+1}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="filename">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> File Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.filename}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="filestatus">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+        <td mat-cell *matCellDef="let element"> {{element.filestatus}} </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="Uploaded_date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date </th>
+        <td mat-cell *matCellDef="let element"> {{element['Uploaded_date'] | date:"YYYY-MMM-dd, h:mm a"}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Last_modified_date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Modified Date </th>
+        <td mat-cell *matCellDef="let element"> {{element['Last_modified_date'] | date:"YYYY-MMM-dd, h:mm a"}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon color="primary" class="actionIcon" matTooltip="Redact" matTooltipPosition=left
+            (click)="redactFile(element)" *ngIf="element['file_status']==1">aspect_ratio</mat-icon>
+          <mat-icon color="primary" class="actionIcon" matTooltip="Compare" matTooltipPosition=left
+            (click)="compare(element)" *ngIf="element['file_status']!=1">compare</mat-icon>
+            <a (click)="Download(element)" *ngIf="element['file_status']!=1">
+              <mat-icon color="primary" class="actionIcon" matTooltip="Download" matTooltipPosition=above
+                *ngIf="element['file_status']!=1">download</mat-icon>
+            </a>
+          <!-- <a href="{{element['file_url']}}" *ngIf="element['file_status']!=1">
+            <mat-icon color="primary" class="actionIcon" matTooltip="Download" matTooltipPosition=above
+              *ngIf="element['file_status']!=1">download</mat-icon>
+          </a> -->
+          <mat-icon color="warn" class="actionIcon" matTooltip="Delete" matTooltipPosition=right
+            (click)="deleteUser(element)">delete</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <mat-paginator [pageSizeOptions]="[5,10, 15, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+  </mat-paginator>
+
+</div>
+
+<!-- Add file popup start -->
+<div class="modal shadow glassmorph" id="myModal" *ngIf="croppopup" style="display: block!important;overflow: hidden;">
+  <div class="modal-dialog">
+    <div class="modal-content glassmorph">
+      <div class="modal-body">
+        <div class="form-group row">
+          <div class="col-12 text-center">
+            <div class="form-group row">
+              <div class="col-12 text-center">
+                <div style="padding: 15px;">
+                  <div>
+                    <div class="dropzone" fileDragDrop (filesChangeEmiter)="onFileChange($event)">
+                      <div class="text-wrapper">
+                        <div class="centered">
+                          <input type="file" name="file" id="file"
+                            accept=".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel,xls,.xlsx"
+                            (change)="onFileChange($event)" multiple>
+                          <label for="file"><span class="textLink">Select your file</span> or Drop it here!</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="progress mt-2" *ngIf="progress">
+                    <div class="progress-bar" [style.width]="curSec + '%'">{{curSec}}%</div>
+                  </div>
+                  <hr>
+                  <h3 mat-subheader>Files</h3>
+                  <div class="row fileItem" *ngFor="let f of files; let ind = index">
+                    <div class="col-sm-12 fileItemIconDiv" (click)="deleteFromArray(ind);">
+                      <mat-icon class="delete-con">delete</mat-icon>
+                    </div>
+                    <div class="col-sm-12 fileItemText">
+                      <span>{{f.name}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-12 text-center mt-4">
+            <button mat-stroked-button class="btn btn-rounded btn-cancel mr-2"
+              (click)="cancel()">Cancel</button>&nbsp;&nbsp;
+            <button mat-stroked-button class="btn btn-success mr-4" [disabled]="!checkFileUploaded"
+              (click)="uploadfunction() ">Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- popup end -->
+<div class="container" *ngIf="showExcel">
+  <div class="row mt-3">
+    <div class="bredcum col-md-12">
+      <span (click)="toggleView()">Files</span>
+      <mat-icon style="vertical-align: bottom;">navigate_next</mat-icon>
+      <span>{{filename}}</span>
+    </div>
+  </div>
+  <div class="row mt-3" style="background-color: #227447;">
+    <div class="col-md-9">
+      <mat-slide-toggle [(ngModel)]="autoSave" style="position: relative;top: 5px;" class="whiteBtn"
+        (change)="enableAutoSave()">Auto Save</mat-slide-toggle>
+    </div>
+    <div class="col-md-3" style="text-align: end;padding: 0px;">
+      <button type="button" mat-stroked-button class="save whiteBtn" (click)="saveAll()" matTooltip="Save All"
+        matTooltipPosition=above [disabled]="autoSave">
+        <mat-icon>save</mat-icon>
+      </button>
+      <button type="button" mat-stroked-button class="whiteBtn" (click)="restoreAll()" matTooltip="Restore"
+        matTooltipPosition=above>
+        <mat-icon>restore</mat-icon>
+      </button>
+      <button type="button" mat-stroked-button class="whiteBtn" (click)="toggleView()" matTooltip="Close"
+        matTooltipPosition=above>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12" style="padding: 0px;">
+      <input type="text" [disabled]="!previewtext" placeholder="Preview text here" class="form-control"
+        [(ngModel)]="previewtext" (keyup)="changePriewtext()" />
+    </div>
+  </div>
+  <div class="row mat-elevation-z8 fixedHeight">
+    <table class="table excelTable"  id="excel-table">
+      <thead style="position: sticky;top: 0">
+        <th *ngFor="let key of columns" scope="col">
+          <b>{{ key.label }}</b>
+        </th>
+      </thead>
+      <tbody>
+        <tr *ngFor='let row of excelData'>
+          <td *ngFor='let key of columns; let i=index'>
+            <ng-container *ngIf="i==0">
+              <p>{{row[key.id]}}</p>
+            </ng-container>
+            <ng-container *ngIf="i!=0">
+              <textarea matInput [(ngModel)]="row[key.id]" name="{{row[key.id]}}" cdkTextareaAutosize *ngIf="!autoSave"
+                (keyup)="previewtextfun($event.target)" (click)="previewtextfun($event.target)"></textarea>
+              <textarea matInput [(ngModel)]="row[key.id]" name="{{row[key.id]}}" cdkTextareaAutosize *ngIf="autoSave"
+                (keyup)="saveAll()" (keydown)="previewtextfun($event.target)"
+                (click)="previewtextfun($event.target)"></textarea>
+            </ng-container>
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- loader start -->
+
+
+<div class="modal shadow" id="myModal" *ngIf="loader" style="display: block!important;">
+  <div class="modal-dialog loader-margin">
+    <div class="form-group row">
+      <div class="col-12 text-center">
+        <div class="loader"></div>
+        <div class="loader loader-1">
+          <div class="loader-outter"></div>
+          <div class="loader-inner"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

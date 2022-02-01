@@ -1,0 +1,14 @@
+{
+    "/api": {
+      "target": "http://localhost:8000",
+      "secure": false,
+      "changeOrgin":false,
+      "logLevel":"debug"
+    },
+    "/uploaded": {
+      "target": "http://localhost:8000",
+      "secure": false,
+      "changeOrgin":false,
+      "logLevel":"debug"
+    }
+  }

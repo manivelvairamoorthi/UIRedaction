@@ -1,0 +1,66 @@
+<div class="container-fluid">
+<div class="row">
+    <div class="col-md-12">
+        <header>
+            <div class="pos-f-t">
+                <!-- Image and text -->
+                <nav class="navbar navbar-light bg-light">
+                    <div class="navbar-brand" >
+                        <div id="test" (click)="togglemenu()">
+                            <div class="icon"><mat-icon class="menu-icon">{{menuicon}}</mat-icon></div>
+                        </div>
+                        <img src="../../../assets/Ntt_Icon.png" width="100" height="80" class="d-inline-block align-top" alt="">
+                        
+                    </div>
+                    <div id="navbarText">
+                        <span> 
+                            <dl style="display: inline-block;vertical-align: middle;">
+                                <dt class="text-blue">{{user.user_name}} &nbsp;</dt>
+                                <!-- <dt style="font-size: 9px;text-align: right;color: black;"> &nbsp;</dt> -->
+                            </dl>
+                        </span>
+                        <img class="jim" src="../../../assets/Blank_DP.jpg" alt=""/>
+                    </div>
+                </nav>
+              </div>
+        </header>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-1" id="col1">
+        <div class="navigation" id="sidenav">
+            <ul>
+                <li class="list" (click)="listClick($event)" routerLinkActive="active" matTooltip="File" matTooltipPosition=right>
+                    <a routerLink="file">
+                        <span class="icon"><mat-icon>article</mat-icon></span>
+                        <span class="title">File</span>
+                    </a>
+                </li>
+                <li class="list" routerLinkActive="active" matTooltip="Users" matTooltipPosition=right>
+                    <a routerLink="user" (click)="listClick($event)">
+                        <span class="icon"><mat-icon>people</mat-icon></span>
+                        <span class="title">Users</span>
+                    </a>
+                </li>
+                <li class="list" routerLinkActive="active" matTooltip="Dashboard" matTooltipPosition=right>
+                    <a routerLink="dashboard" (click)="listClick($event)">
+                        <span class="icon"><mat-icon>dashboard</mat-icon></span>
+                        <span class="title">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list" matTooltip="Logout" matTooltipPosition=right (click)="logout()">
+                    <a >
+                        <span class="icon"><mat-icon>logout</mat-icon></span>
+                        <span class="title">Logout</span>
+                    </a>
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div class="col-md-11" id="col11">
+        <router-outlet></router-outlet>
+    </div>
+</div>
+</div>
